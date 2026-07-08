@@ -1,6 +1,9 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { AutomationEngine, ScenarioStep } from './core/automation-engine'
+import { MockPerception } from './adapters/perception/mock-perception'
+import { MockExecution } from './adapters/execution/mock-execution'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
@@ -59,6 +62,8 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  testAutomation()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -69,6 +74,24 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+// mock 플러그를 core에 꽂아 시나리오 한 스텝을 시험 실행 (임시 검증용)
+async function testAutomation() {
+  const perception = new MockPerception()
+  const execution = new MockExecution()
+  const engine = new AutomationEngine(perception, execution)
+
+  const step: ScenarioStep = {
+    step: 1,
+    desc: '게스트 로그인 버튼 터치',
+    targetLabel: 'guest_login',
+    action: { type: 'tap', x: 900, y: 850 },
+    postDelay: 1.0
+  }
+
+  const result = await engine.runStep(step)
+  console.log('[테스트 결과]', result)
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
