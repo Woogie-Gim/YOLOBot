@@ -54,4 +54,23 @@ export class AutomationEngine {
       note: result.success ? '정상 실행' : (result.error ?? '실행 실패')
     }
   }
+
+   // 시나리오 전체를 순서대로 실행하고 모든 결과를 반환
+  async runScenario(steps: ScenarioStep[]): Promise<StepResult[]> {
+    const results: StepResult[] = []
+
+    for (const step of steps) {
+      const result = await this.runStep(step)
+      results.push(result)
+
+      await this.delay(step.postDelay * 1000)
+    }
+
+    return results
+  }
+
+  // 지정한 밀리초만큼 대기
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 }

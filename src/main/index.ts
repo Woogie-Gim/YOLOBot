@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { readFileSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AutomationEngine, ScenarioStep } from './core/automation-engine'
@@ -63,7 +64,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
-  testAutomation()
+  runTestScenario()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -75,23 +76,24 @@ app.on('window-all-closed', () => {
   }
 })
 
-// mock 플러그를 core에 꽂아 시나리오 한 스텝을 시험 실행 (임시 검증용)
-async function testAutomation() {
+// 시나리오 JSON을 읽어 mock 어댑터로 실행 (임시 검증용)
+async function runTestScenario() {
   const perception = new MockPerception()
   const execution = new MockExecution()
   const engine = new AutomationEngine(perception, execution)
 
-  const step: ScenarioStep = {
-    step: 1,
-    desc: '게스트 로그인 버튼 터치',
-    targetLabel: 'guest_login',
-    action: { type: 'tap', x: 900, y: 850 },
-    postDelay: 1.0
-  }
+  const scenarioPath = join(app.getAppPath(), 'config', 'scenarios', 'test-scenario.json')
+  const scenarioData = readFileSync(scenarioPath, 'utf-8')
+  const steps: ScenarioStep[] = JSON.parse(scenarioData)
 
-  const result = await engine.runStep(step)
-  console.log('[테스트 결과]', result)
+  console.log(`[시나리오 시작] 총 ${steps.length}개 스텝`)
+
+  const results = await engine.runScenario(steps)
+
+  console.log('[시나리오 완료]')
+  results.forEach((r) => {
+    console.log(`  Step ${r.step}: ${r.status} - ${r.desc} (${r.note})`)
+  })
 }
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

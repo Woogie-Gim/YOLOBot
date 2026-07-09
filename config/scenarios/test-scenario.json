@@ -1,0 +1,16 @@
+[
+  {
+    "step": 1,
+    "desc": "게스트 로그인 버튼 터치",
+    "targetLabel": "guest_login",
+    "action": { "type": "tap", "x": 900, "y": 850 },
+    "postDelay": 1.0
+  },
+  {
+    "step": 2,
+    "desc": "서버 선택 버튼 터치",
+    "targetLabel": "server_select",
+    "action": { "type": "tap", "x": 1200, "y": 600 },
+    "postDelay": 1.5
+  }
+]
