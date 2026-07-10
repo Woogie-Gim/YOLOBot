@@ -16,6 +16,10 @@ export interface StepResult {
   desc: string
   status: 'PASS' | 'FAIL'
   note: string
+  timestamp: string
+  durationMs: number
+  method?: 'template' | 'yolo' | 'vlm'
+  confidence?: number
 }
 
 // 자동화 지휘자: 포트만 참조하며 인식/실행 구현은 모름
@@ -27,6 +31,9 @@ export class AutomationEngine {
 
   // 시나리오 스텝 하나를 실행하고 결과를 반환
   async runStep(step: ScenarioStep): Promise<StepResult> {
+    const startTime = Date.now()
+    const timestamp = new Date().toISOString()
+
     // 화면을 인식 (어떻게 하는지는 모름)
     const screen = await this.perception.getScreen()
 
@@ -39,7 +46,9 @@ export class AutomationEngine {
         step: step.step,
         desc: step.desc,
         status: 'FAIL',
-        note: '화면에서 목표 요소를 찾지 못함'
+        note: '화면에서 목표 요소를 찾지 못함',
+        timestamp,
+        durationMs: Date.now() - startTime
       }
     }
 
@@ -51,7 +60,11 @@ export class AutomationEngine {
       step: step.step,
       desc: step.desc,
       status: result.success ? 'PASS' : 'FAIL',
-      note: result.success ? '정상 실행' : (result.error ?? '실행 실패')
+      note: result.success ? '정상 실행' : (result.error ?? '실행 실패'),
+      timestamp,
+      durationMs: Date.now() - startTime,
+      method: target.method,
+      confidence: target.confidence
     }
   }
 

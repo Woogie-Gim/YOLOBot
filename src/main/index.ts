@@ -1,10 +1,11 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { readFileSync } from 'fs'
+import { mkdirSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AutomationEngine, ScenarioStep } from './core/automation-engine'
 import { MockPerception } from './adapters/perception/mock-perception'
 import { MockExecution } from './adapters/execution/mock-execution'
+import { ExcelReportWriter } from './adapters/reporting/excel-report-writer'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
@@ -94,6 +95,20 @@ async function runTestScenario() {
   results.forEach((r) => {
     console.log(`  Step ${r.step}: ${r.status} - ${r.desc} (${r.note})`)
   })
+
+  const reportDir = join(app.getAppPath(), 'reports')
+
+  if (!existsSync(reportDir)) {
+    mkdirSync(reportDir, { recursive: true })
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const reportPath = join(reportDir, `QA_Report_${timestamp}.xlsx`)
+
+  const writer = new ExcelReportWriter()
+  await writer.write(results, reportPath)
+
+  console.log(`[리포트 저장 완료] ${reportPath}`)
 }
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
