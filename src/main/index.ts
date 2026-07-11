@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AutomationEngine, ScenarioStep } from './core/automation-engine'
 import { MockPerception } from './adapters/perception/mock-perception'
-import { MockExecution } from './adapters/execution/mock-execution'
+import { AdbExecution } from './adapters/execution/adb-execution'
 import { ExcelReportWriter } from './adapters/reporting/excel-report-writer'
 import icon from '../../resources/icon.png?asset'
 
@@ -80,7 +80,7 @@ app.on('window-all-closed', () => {
 // 시나리오 JSON을 읽어 mock 어댑터로 실행 (임시 검증용)
 async function runTestScenario() {
   const perception = new MockPerception()
-  const execution = new MockExecution()
+  const execution = new AdbExecution()
   const engine = new AutomationEngine(perception, execution)
 
   const scenarioPath = join(app.getAppPath(), 'config', 'scenarios', 'test-scenario.json')
