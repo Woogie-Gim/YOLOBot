@@ -3,7 +3,7 @@ import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AutomationEngine, ScenarioStep } from './core/automation-engine'
-import { MockPerception } from './adapters/perception/mock-perception'
+import { YoloPerception } from './adapters/perception/yolo-perception'
 import { AdbPerception } from './adapters/perception/adb-perception'
 import { AdbExecution } from './adapters/execution/adb-execution'
 import { ExcelReportWriter } from './adapters/reporting/excel-report-writer'
@@ -67,7 +67,7 @@ app.whenReady().then(() => {
   })
 
   testCapture()
-  //runTestScenario()
+  runTestScenario()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -81,7 +81,7 @@ app.on('window-all-closed', () => {
 
 // 시나리오 JSON을 읽어 mock 어댑터로 실행 (임시 검증용)
 async function runTestScenario() {
-  const perception = new MockPerception()
+  const perception = new YoloPerception()
   const execution = new AdbExecution()
   const engine = new AutomationEngine(perception, execution)
 
