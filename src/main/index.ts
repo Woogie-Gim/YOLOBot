@@ -1,10 +1,9 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs'
+import { mkdirSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AutomationEngine, ScenarioStep } from './core/automation-engine'
 import { YoloPerception } from './adapters/perception/yolo-perception'
-import { AdbPerception } from './adapters/perception/adb-perception'
 import { AdbExecution } from './adapters/execution/adb-execution'
 import { ExcelReportWriter } from './adapters/reporting/excel-report-writer'
 import icon from '../../resources/icon.png?asset'
@@ -66,7 +65,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
-  testCapture()
   runTestScenario()
 })
 
@@ -79,7 +77,7 @@ app.on('window-all-closed', () => {
   }
 })
 
-// 시나리오 JSON을 읽어 mock 어댑터로 실행 (임시 검증용)
+// 시나리오 JSON을 읽어 실행 (임시 검증용)
 async function runTestScenario() {
   const perception = new YoloPerception()
   const execution = new AdbExecution()
@@ -112,17 +110,3 @@ async function runTestScenario() {
 
   console.log(`[리포트 저장 완료] ${reportPath}`)
 }
-
-// 캡처 기능만 단독 확인 (임시)
-async function testCapture() {
-  const perception = new AdbPerception()
-  const result = await perception.getScreen()
-
-  const savePath = join(app.getAppPath(), 'capture-test.png')
-  writeFileSync(savePath, result.screenshot)
-
-  console.log(`[캡처 테스트] 이미지 크기: ${result.screenshot.length} bytes`)
-  console.log(`[캡처 저장] ${savePath}`)
-}
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
