@@ -4,3 +4,7 @@ out
 .DS_Store
 .eslintcache
 *.log*
+dataset/images/
+dataset/yolo-dataset/
+/reports/
+inference-service/runs/

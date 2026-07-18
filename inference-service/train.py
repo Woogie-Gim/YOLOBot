@@ -6,7 +6,7 @@ model = YOLO("yolo11n.pt")
 # 우리 데이터셋으로 추가 학습
 model.train(
     data="C:/Users/pc/yolobot/dataset/yolo-dataset/dataset.yaml",
-    epochs=50,
+    epochs=300,
     imgsz=640,
     batch=4,
     name="guest_login_v1"
