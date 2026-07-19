@@ -1,11 +1,13 @@
 from ultralytics import YOLO
 
-model = YOLO("model/guest_login_v1.pt")
+model = YOLO("runs/detect/guest_login_v2/weights/best.pt")
 
-# 임계값을 극단적으로 낮춰서 확인
-results = model("../dataset/yolo-dataset/images/", conf=0.01, save=True)
+results = model("../dataset/yolo-dataset/images/", conf=0.25, save=True)
 
+detected = 0
 for r in results:
-    if len(r.boxes) > 0:
-        for box in r.boxes:
-            print(f"{r.path.split('\\')[-1]}: conf={float(box.conf[0]):.4f}")
+    for box in r.boxes:
+        detected += 1
+        print(f"{r.path.split(chr(92))[-1]}: conf={float(box.conf[0]):.3f}")
+
+print(f"\n총 {detected}개 탐지 (20장 중)")

@@ -8,7 +8,7 @@ from PIL import Image
 app = FastAPI()
 
 # 학습된 모델 로드 (서버 시작 시 1회)
-model = YOLO("model/guest_login_v1.pt")
+model = YOLO("model/guest_login_v2.pt")
 
 # 화면 인식 요청을 받아 YOLO 탐지 결과를 반환
 @app.post("/infer")
