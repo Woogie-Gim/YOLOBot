@@ -8,3 +8,8 @@ dataset/images/
 dataset/yolo-dataset/
 /reports/
 inference-service/runs/
+# 모델 가중치 파일 (용량 큼)
+*.pt
+*.ts
+inference-service/model/
+inference-service/runs/
